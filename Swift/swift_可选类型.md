@@ -33,7 +33,35 @@ if let value = optional {
 var optional: String!
 ```
 
-问题： 如何展开可选类型
+1.5 可选类型的探究
+
+可选类型本质是一个枚举：
+
+```swift
+public enum Optional<Wrapped> : _Reflectable, NilLiteralConvertible {
+    case None
+    case Some(Wrapped)
+
+    public init(_ some: Wrapped) { self = .some(some) }
+}
+
+let number: Int? = Optional.some(42)
+let nonumber: Int? = Optional.none
+```
+
+1.6 面试题
+
+```swift
+var a: Int? = 3
+var b: Int?? = a
+
+var c: Int?? = 3
+var d: Int? = c
+```
+
+上面的成立，下面的不成立；就是因为它有一个构造函数 `public init(_ some: Wrapped) { self = .some(some) }`;
+
+
 
 
 

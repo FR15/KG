@@ -87,6 +87,52 @@ class HTMLElement {
 }
 ```
 
+1.5  引用类型和值类型集合中的引用类型 形成循环强引用
+
+```swift
+// 存在以下情况
+// 数组是 值类型,但是数组中存放了 引用类型
+// 强引用循环
+// Person -> Array -> Phone -> Person
+class Phone {
+    var owner: Person!
+}
+class Person {
+    var phones: [Phone] = []
+    // 解决方式
+    // Person -> Array -> Unowned ...> Phone -> Person
+    var weakPhones: [Unowned<Phone>] = []
+    init() {
+        print("init")
+    }
+    deinit {
+        print("deinit")
+    }
+}
+
+class Unowned<T: AnyObject> {
+    unowned var value: T
+    
+    init(_ value: T) {
+        self.value = value
+    }
+}
+
+do {
+    
+    let person = Person()
+    let phone = Phone()
+    phone.owner = person
+    
+    // 释放
+    person.weakPhones.append(Unowned(phone))
+    // 没有释放
+    person.phones.append(phone)
+}
+```
+
+[资料](https://www.raywenderlich.com/966538-arc-and-memory-management-in-swift)
+
 问题： 
 
 自动引用计数 如何保存
